@@ -1,0 +1,487 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <meta charset='utf-8' />
+    <title>Traffic Chage from 2010 to 2016</title>
+    <meta name='viewport' content='initial-scale=1,maximum-scale=1,user-scalable=no' />
+    <script src='https://api.tiles.mapbox.com/mapbox-gl-js/v0.43.0/mapbox-gl.js'></script> <!-- Import Mapbox API -->
+    <link href='https://api.tiles.mapbox.com/mapbox-gl-js/v0.43.0/mapbox-gl.css' rel='stylesheet' /> <!-- Mapbox stylesheet -->
+    <style>
+        body { margin:0; padding:0; }
+        #map { 
+        	position:absolute; 
+        	top:0; 
+        	bottom:0; 
+        	width:100%;
+        	z-index: -1; } /* Style map and bring it to the back */
+    </style>
+    
+    
+    <!-- Add legend inside the console tag -->
+    <div id = 'console'>
+    	<h3 style = "color: white; font-family: Comic Sans MS">Traffic count from 2010 to 2016</h3>
+    	
+    	<style>
+    	#console {
+  			position: absolute;
+  			width: 270px;
+  			margin-top: 30px;
+  			margin-left: 30px;
+  			padding: 10px 20px;
+  			background-color: #3887be;
+  			opacity: 0.6;
+  			border-radius: 5px
+			}
+  		</style>
+  		
+  		<!-- Add content to legend -->
+  		<div id = 'legend'>
+  			<svg width = "20" height = "20">
+  			<rect width = "20" height = "20" fill = "rgba(210,105,30,1)" />
+  			</svg> 2010 <br>
+  			<svg width = "20" height = "20">
+  			<rect width = "20" height = "20" fill = "rgba(100,105,30,1)" />
+  			</svg> 2011 <br>
+  			<svg width = "20" height = "20">
+  			<rect width = "20" height = "20" fill = "rgba(255,0,0,1)" />
+  			</svg> 2012 <br>
+  			<svg width = "20" height = "20">
+  			<rect width = "20" height = "20" fill = "rgba(60,179,113,1)" />
+  			</svg> 2013 <br>
+  			<svg width = "20" height = "20">
+  			<rect width = "20" height = "20" fill = "rgba(0,0,0,1)" />
+  			</svg> 2014 <br>
+  			<svg width = "20" height = "20">
+  			<rect width = "20" height = "20" fill = "rgba(186,85,211,1)" />
+  			</svg> 2015 <br>
+  			<svg width = "20" height = "20">
+  			<rect width = "20" height = "20" fill = "rgba(100,200,30,1)" />
+  			</svg> 2016 <br></br>
+  			<svg width = "20" height = "20">
+  			<circle cx = "6" cy = "6" r = "6" stroke-width = "0" fill = "white" />
+  			</svg> 3000 Traffic Count<br>
+  			<svg width = "50" height = "50">
+  			<circle cx = "24" cy = "24" r = "24" stroke-width = "0" fill = "white" />
+  			</svg> 90000 Traffic Count and up<br></br>
+  			<h5> * Sizes are displayed using equal interval with value of 3000</h5>
+  			
+  			
+  				<style> 
+  					#legend {
+  						font-size: 15px;
+  						font-family: Comic Sans MS;
+  						color: white
+  						} /* Style legend */
+  				</style>
+  			
+  		</div>
+  		
+  	</div>
+</head>
+<body>
+
+
+<!-- Style the menu on the right side -->
+<style>
+    #menu {
+        background: #fff;
+        position: absolute;
+        z-index: 1;
+        top: 100px;
+        right: 20px;
+        border-radius: 5px;
+        width: 120px;
+        border: 1px solid rgba(0,0,0,0.4);
+        font-family:Comic Sans MS;
+    }
+
+    #menu a {
+        font-size: 20px;
+        color: #404040;
+        display: block;
+        margin: 0;
+        padding: 0;
+        padding: 10px;
+        text-decoration: none;
+        border-bottom: 1px solid rgba(0,0,0,0.25);
+        text-align: center;
+    }
+
+    #menu a:last-child {
+        border: none;
+    }
+	/* Change the hover color */
+    #menu a:hover {
+        background-color: #f8f8f8;
+        color: #404040;
+    }
+	/* Change the color when maps are active */
+    #menu a.active {
+        background-color: #3887be;
+        color: #ffffff;
+    }
+	/* Change the hover color when maps are active */
+    #menu a.active:hover {
+        background: #3074a4;
+    }
+</style>
+
+<nav id="menu"></nav>
+<div id="map"></div>
+
+<script>
+// Add Mapbox access token, just like API in Google Map//
+mapboxgl.accessToken = 'pk.eyJ1Ijoic3p3MTk5NDEyMjEiLCJhIjoiY2pjMjI1M2NyMGE4eTM4cWp4MHMyamM2ZyJ9.TPcnFx4g-waMdVygFpDGbQ';
+
+// Create a var called "map" to contain the map and set style and center //
+var map = new mapboxgl.Map({
+    container: 'map',
+    style: 'mapbox://styles/mapbox/light-v9',
+    zoom: 10,
+    center: [-2.2359519,53.4668406]
+});
+
+
+// Create a function to load the same Geojson file but with different years to the map //
+map.on('load', function () {
+   
+    map.addLayer({
+        'id': '2010', // Naming the layer by
+        'type': 'circle', // Define the display type of input data
+        'source': {
+        	type: 'geojson', // Define input data source as Geojson 
+        	data: '/Users/zhengweisun/Desktop/GIS and Web_Accessment2/traffic_10_16.geojson' // Add my Geojson file
+        },
+        'layout': { // Add 'layout' property
+            'visibility': 'visible'
+        },
+        'paint': { // Style circles
+        		'circle-radius': [
+        		'interpolate', // This means points in the data a displayed smoothly based on defined values
+        		['linear'],
+        		['number', ['get', 'allmotorve']], // Specifically define the type of data and use 'get' to retrive data from Geojson poperty
+          		3000, 6,
+          		90000, 20 //Here, I add defined values for circle
+          	],
+        	'circle-color': 'rgba(210,105,30,0.6)', // Change color
+        },
+        	'filter': ['==', 'aadfyear', 2010] // Add a filter to only show the filtered year
+    });
+	
+    
+    map.addLayer({
+        'id': '2011',
+        'type': 'circle',
+        'source': {
+        	type: 'geojson',
+        	data: '/Users/zhengweisun/Desktop/GIS and Web_Accessment2/traffic_10_16.geojson'
+        },
+        'layout': {
+            'visibility': 'visible',
+        },
+       'paint': {
+        	'circle-radius': [
+        	'interpolate',
+        	['linear'],
+        	['number', ['get', 'allmotorve']],
+          	3000, 6,
+          	90000, 24 
+          						
+        	],
+        	'circle-color': 'rgba(100,105,30,0.6)',
+        },
+        	'filter': ['==', 'aadfyear', 2011]
+        
+    });
+    
+    map.addLayer({
+        'id': '2012',
+        'type': 'circle',
+        'source': {
+        	type: 'geojson',
+        	data: '/Users/zhengweisun/Desktop/GIS and Web_Accessment2/traffic_10_16.geojson'
+        },
+        'layout': {
+            'visibility': 'visible',
+        },
+       'paint': {
+        	'circle-radius': [
+        	'interpolate',
+        	['linear'],
+        	['number', ['get', 'allmotorve']],
+          	3000, 6,
+          	90000, 24 
+          						
+        	],
+        	'circle-color': 'rgba(255,0,0,0.6)', 
+        },
+        	'filter': ['==', 'aadfyear', 2012]
+        
+    });
+    
+    map.addLayer({
+        'id': '2013',
+        'type': 'circle',
+        'source': {
+        	type: 'geojson',
+        	data: '/Users/zhengweisun/Desktop/GIS and Web_Accessment2/traffic_10_16.geojson'
+        },
+        'layout': {
+            'visibility': 'visible',
+        },
+       'paint': {
+        	'circle-radius': [
+        	'interpolate',
+        	['linear'],
+        	['number', ['get', 'allmotorve']],
+          	3000, 6,
+          	90000, 24 
+          						
+        	],
+        	'circle-color': 'rgba(60,179,113,0.6)', 
+        },
+        	'filter': ['==', 'aadfyear', 2013]
+        
+    });
+    
+    map.addLayer({
+        'id': '2014',
+        'type': 'circle',
+        'source': {
+        	type: 'geojson',
+        	data: '/Users/zhengweisun/Desktop/GIS and Web_Accessment2/traffic_10_16.geojson'
+        },
+        'layout': {
+            'visibility': 'visible',
+        },
+       'paint': {
+        	'circle-radius': [
+        	'interpolate',
+        	['linear'],
+        	['number', ['get', 'allmotorve']],
+          	3000, 6,
+          	90000, 24 
+          						
+        	],
+        	'circle-color': 'rgba(0,0,0,0.6)', 
+        },
+        	'filter': ['==', 'aadfyear', 2014]
+        
+    });
+    
+    map.addLayer({
+        'id': '2015',
+        'type': 'circle',
+        'source': {
+        	type: 'geojson',
+        	data: '/Users/zhengweisun/Desktop/GIS and Web_Accessment2/traffic_10_16.geojson'
+        },
+        'layout': {
+            'visibility': 'visible',
+        },
+       'paint': {
+        	'circle-radius': [
+        	'interpolate',
+        	['linear'],
+        	['number', ['get', 'allmotorve']],
+          	3000, 6,
+          	90000, 24
+          						
+        	],
+        	'circle-color': 'rgba(186,85,211,0.6)', 
+        },
+        	'filter': ['==', 'aadfyear', 2015]
+        
+    });
+    
+    map.addLayer({
+        'id': '2016',
+        'type': 'circle',
+        'source': {
+        	type: 'geojson',
+        	data: '/Users/zhengweisun/Desktop/GIS and Web_Accessment2/traffic_10_16.geojson'
+        },
+        'layout': {
+            'visibility': 'visible',
+        },
+       'paint': {
+        	'circle-radius': [
+        	'interpolate',
+        	['linear'],
+        	['number', ['get', 'allmotorve']],
+          	3000, 6,
+          	90000, 24
+          						
+        	],
+        	'circle-color': 'rgba(100,200,30,0.6)', 
+        },
+        	'filter': ['==', 'aadfyear', 2016]
+        
+    });
+    
+    
+});
+
+
+	// Add infowindow to each layer based on property 'allmotorve' //
+	map.on('click', '2010', function(e) { // Create a function
+		new mapboxgl.Popup() // Add element of popup
+			.setLngLat(e.features[0].geometry.coordinates) //Set locations for infowindow
+			.setHTML('<h4>' + 'Traffic Count:' +' ' + e.features[0].properties.allmotorve + '</h4>') // Set content of infowindow
+			.addTo(map); // Update infowindow to the map
+		});
+		
+	map.on('mouseenter', '2010', function() { // Create a function that change mouse to pointer when hover on the point
+		map.getCanvas().style.cursor = 'pointer';
+		});
+		
+	map.on('mouseleave', '2010', function() { // Create another function that change mouse to pan when leaves the point
+		map.getCanvas().style.cursor = '';
+		});
+		
+	//--------------------------------- // 	
+	map.on('click', '2011', function(e) {
+		new mapboxgl.Popup()
+			.setLngLat(e.features[0].geometry.coordinates)
+			.setHTML('<h4>' + 'Traffic Count:' +' ' + e.features[0].properties.allmotorve + '</h4>')
+			.addTo(map);
+		});
+		
+	map.on('mouseenter', '2011', function() {
+		map.getCanvas().style.cursor = 'pointer';
+		});
+		
+	map.on('mouseleave', '2011', function() {
+		map.getCanvas().style.cursor = '';
+		});
+		
+	//---------------------------------//	
+	map.on('click', '2012', function(e) {
+		new mapboxgl.Popup()
+			.setLngLat(e.features[0].geometry.coordinates)
+			.setHTML('<h4>' + 'Traffic Count:' +' ' + e.features[0].properties.allmotorve + '</h4>')
+			.addTo(map);
+		});
+		
+	map.on('mouseenter', '2012', function() {
+		map.getCanvas().style.cursor = 'pointer';
+		});
+		
+	map.on('mouseleave', '2012', function() {
+		map.getCanvas().style.cursor = '';
+		});
+		
+		
+	//-------------------------------//
+	
+	map.on('click', '2013', function(e) {
+		new mapboxgl.Popup()
+			.setLngLat(e.features[0].geometry.coordinates)
+			.setHTML('<h4>' + 'Traffic Count:' +' ' + e.features[0].properties.allmotorve + '</h4>')
+			.addTo(map);
+		});
+		
+	map.on('mouseenter', '2013', function() {
+		map.getCanvas().style.cursor = 'pointer';
+		});
+		
+	map.on('mouseleave', '2013', function() {
+		map.getCanvas().style.cursor = '';
+		});
+		
+		//------------------------------//
+		map.on('click', '2014', function(e) {
+		new mapboxgl.Popup()
+			.setLngLat(e.features[0].geometry.coordinates)
+			.setHTML('<h4>' + 'Traffic Count:' +' ' + e.features[0].properties.allmotorve + '</h4>')
+			.addTo(map);
+		});
+		
+	map.on('mouseenter', '2014', function() {
+		map.getCanvas().style.cursor = 'pointer';
+		});
+		
+	map.on('mouseleave', '2014', function() {
+		map.getCanvas().style.cursor = '';
+		});
+		
+		//------------------------------//
+		map.on('click', '2015', function(e) {
+		new mapboxgl.Popup()
+			.setLngLat(e.features[0].geometry.coordinates)
+			.setHTML('<h4>' + 'Traffic Count:' +' ' + e.features[0].properties.allmotorve + '</h4>')
+			.addTo(map);
+		});
+		
+	map.on('mouseenter', '2015', function() {
+		map.getCanvas().style.cursor = 'pointer';
+		});
+		
+	map.on('mouseleave', '2015', function() {
+		map.getCanvas().style.cursor = '';
+		});
+		
+		
+		//------------------------------//
+		map.on('click', '2016', function(e) {
+		new mapboxgl.Popup()
+			.setLngLat(e.features[0].geometry.coordinates)
+			.setHTML('<h4>' + 'Traffic Count:' +' ' + e.features[0].properties.allmotorve + '</h4>')
+			.addTo(map);
+		});
+		
+	map.on('mouseenter', '2016', function() {
+		map.getCanvas().style.cursor = 'pointer';
+		});
+		
+	map.on('mouseleave', '2016', function() {
+		map.getCanvas().style.cursor = '';
+		});
+		
+		// Infowindow ends here//
+		
+		
+		
+	
+		
+// Create an array for displaying in the menu, and for contain all layers based on 'id'
+var toggleableLayerIds = [ '2010', '2011', '2012', '2013', '2014', '2015', '2016' ];
+
+// A 'for' function to loop through elements in the variable I created above
+for (var i = 0; i < toggleableLayerIds.length; i++) {
+    var id = toggleableLayerIds[i];
+	
+	// Another variable to link text to the menu, thus years are showing on the menu
+    var link = document.createElement('a');
+    link.href = '#';
+    link.className = 'active';
+    link.textContent = id;
+	
+	// Add a 'click' function
+    link.onclick = function (e) {
+        var clickedLayer = this.textContent;
+        e.preventDefault();
+        e.stopPropagation();
+		// Create a variable that select 'visibility' from layout property in Mapbox API
+        var visibility = map.getLayoutProperty(clickedLayer, 'visibility');
+		
+		// An 'if' function to give conditions
+        if (visibility === 'visible') {
+            map.setLayoutProperty(clickedLayer, 'visibility', 'none');
+            this.className = '';
+        } else {
+            this.className = 'active';
+            map.setLayoutProperty(clickedLayer, 'visibility', 'visible');
+        }
+    };
+
+
+	// Update above conditions to the div menu
+	var layers = document.getElementById('menu');
+    layers.appendChild(link);
+}
+
+</script>
+
+</body>
+</html>
